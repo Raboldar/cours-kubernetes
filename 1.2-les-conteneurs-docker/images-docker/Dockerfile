@@ -13,6 +13,9 @@ LABEL app_name="Hello World Flask"
 RUN apt-get update -y && \
     apt-get install -y python3-pip python3-dev
 
+# Changement
+RUN echo "Hello"
+
 # Copyer les fichiers applicatifs locaux dans le conteneur ( chemin localhost -> chemin container ) 
 COPY ./src /app
 

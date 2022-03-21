@@ -28,16 +28,15 @@ dirs:
 $(output)/%.pdf: $(source)/%.md dirs
 	pandoc \
 		--variable mainfont="inconsolata" \
-		--variable monofont="inconsolata" \
 		--variable fontsize=11pt \
 		--variable geometry:"top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm" \
 		--variable geometry:a4paper \
 		--table-of-contents \
 		--number-sections \
-		-f markdown  $< \
+		-f markdown+smart  $< \
+		--listing \
 		--pdf-engine=lualatex \
 		-o $@
-
 
 .PHONY : clean
 

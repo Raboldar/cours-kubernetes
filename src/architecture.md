@@ -4,6 +4,8 @@ title: |
 
   Formation Kubernetes
 
+  Architecture des Clusters
+
 author: Popa Ionut
 date: 07/03/2022
 classoption: table
@@ -88,7 +90,8 @@ Tout changement d'état de notre cluster passe par un Nœud Master avant d'être
 ![Composantes principales d'un Noeud Master](./src/img/master_components.png ){width=3in}
 
 ## kube-api-server
-> Fichier de configuration : **/etc/kubernetes/manifests/kube-apiserver.yaml**
+> Fichier de configuration : **/etc/kubernetes/manifests/kube-apiserver.yaml**   
+> Namespace : kube-system
 
 Le serveur API sert d'interface pour la communication avec le plan de contrôle (ensemble de un ou plusieurs Noeuds Master constituant un cluster).  
 Il est chargé d'exposer l'API (Application Programming Interface ) Kubernetes, ce qui garantit que le plan de contrôle peut traiter les demandes externes et internes.
@@ -102,7 +105,8 @@ L'api-server se chargera de vérifier l'identité de l'utilisateur, les droits q
 Si la requête faite par l'utilisateur passe tous les vérifications faites par l'api-server ceux-ci seront enregistrées dans la base de données etcd.
 
 ## etcd
-> Fichier de configuration : **/etc/kubernetes/manifests/etcd.yaml**
+> Fichier de configuration : **/etc/kubernetes/manifests/etcd.yaml**   
+> Namespace : kube-system
 
 ETCD est un base de données type clé valeur dans la quelle l'état de notre cluster est stocke, tout changement transmit vers l'api-server doit être écrit dans la base de données avant qu'il soit applique par les 
 autres composantes Kubernetes.
@@ -112,7 +116,8 @@ Sachant que la base de données contient l'état de notre cluster, un backup de 
 **Attention:** Les données liées a nos applications déployés dans le cluster ne sont pas stocke dans la base de données etcd, seulement l'état de nos composantes est stocke (pods, services, deployments etc..)
 
 ## kube-scheduler
-> Fichier de configuration : **/etc/kubernetes/manifests/kube-scheduler.yaml**
+> Fichier de configuration : **/etc/kubernetes/manifests/kube-scheduler.yaml**   
+> Namespace : kube-system
 
 Dans le cadre d'un déploiement d'application dans un cluster Kubernetes le cluster doit décider sur quel Noeud de type Worker mettre les objets (Pods) qui concernent notre déploiement.  
 Pour faire cela Kubernetes utilise un composante appelé kube-scheduler.   
@@ -124,7 +129,8 @@ Après avoir identifie le/les nœud(s) qui porteront la charge applicative, ceux
 Maintenant le kube-controller pourra lancer le déploiement des applications.
 
 ## kube-controller
-> Fichier de configuration : **/etc/kubernetes/manifests/kube-controller-manager.yaml**
+> Fichier de configuration : **/etc/kubernetes/manifests/kube-controller-manager.yaml**    
+> Namespace : kube-system
 
 La composantes kube-controller surveille la base de données etcd, dans le cas ou il identifie des objets qui doivent être déployées sur un nœud
 mais qui ne le sont pas encore il envoie les instructions au Nœuds Workers pour créer les objets demandes.
@@ -141,7 +147,7 @@ Comme nous l'avons mentionné précédemment les workers sont charges d'accueill
 ![Composantes de Nœuds Worker](./src/img/composantes_worker.png ){width=5in}
 
 ## kubelet
-> Fichier de configuration : **/etc/kubernetes/kubelet.conf**
+> Fichier de configuration : **/etc/kubernetes/kubelet.conf**    
 > Namespace : pas de namespace, directement déployé sur la machine.
 
 Quand le controller-manager envoie des directives vers les workers celles-ci sont reçue par kubelet.  
@@ -158,10 +164,24 @@ et les applications seront transfères sur les autres nœuds.
 Kubelet recois les 
 
 ## Container Runtime (CRE)
+> Fichier de configuration : **Dépends du CRE installé **    
+> Namespace : pas de namespace, directement déployé sur la machine.
+
+CRE ou Container Runtime Engine est la composante responsable de la création et management de conteneurs.  
+
+Kubelet applique les instructions envoyées par le controller-manager en s'appuyant sur le CRE pour les opérations comme :   
+- Création de conteneur   
+- Suppression de conteneur   
+- Configuration des parametres reseau, environnement et montage des volumes disque dans le conteneur.   
+
+Le CRE communique seulement avec le kubelet.   
 
 
 ## kube-proxy
+> Fichier de configuration : **/var/lib/kube-proxy/config.conf**    
+> Namespace : kube-system
 
-
-
+Cette composante est présente sur tous les Noeuds et elle est responsable de la création des règles de flux pour autoriser ou interdire 
+la communication entre les conteneurs.  
+Le kube-proxy va assure la communication entre les conteneurs et redirige le trafic entre les répliquas en cas de besoin.
 

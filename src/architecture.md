@@ -26,6 +26,10 @@ output: pdf_document
 ---
 \newpage
 
+\tableofcontents
+
+\newpage
+
 # Architecture Kubernetes
 
 Ce document fourni des informations sur les différentes composantes d'infrastructure qu'on peut 

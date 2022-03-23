@@ -27,4 +27,3 @@ output: pdf_document
 \newpage
 
 # Les objets Kubernetes
-

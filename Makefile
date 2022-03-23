@@ -31,7 +31,6 @@ $(output)/%.pdf: $(source)/%.md dirs
 		--variable fontsize=11pt \
 		--variable geometry:"top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm" \
 		--variable geometry:a4paper \
-		--table-of-contents \
 		--number-sections \
 		-f markdown+smart  $< \
 		--listing \

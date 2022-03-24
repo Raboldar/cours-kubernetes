@@ -23,6 +23,11 @@ header-includes: |
     \fancyfoot[LE,RO]{\thepage}
 
 output: pdf_document
+
+mainfont: inconsolata.ttf
+sansfont: DejaVuSans.ttf
+monofont: DejaVuSansMono.ttf 
+mathfont: texgyredejavu-math.otf 
 ---
 \newpage
 

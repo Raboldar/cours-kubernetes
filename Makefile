@@ -25,16 +25,17 @@ dirs:
 	mkdir -p $(directories)
 	
 # Commande a executer pour convertir les fichiers.
+# --variable mainfont="inconsolata" 
+# --highlight-style zenburn
 $(output)/%.pdf: $(source)/%.md dirs
 	pandoc \
-		--variable mainfont="inconsolata" \
-		--variable fontsize=11pt \
+		--variable fontsize=12pt \
 		--variable geometry:"top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm" \
 		--variable geometry:a4paper \
 		--number-sections \
+		--listings \
 		-f markdown+smart  $< \
-		--listing \
-		--pdf-engine=lualatex \
+		--pdf-engine=xelatex \
 		-o $@
 
 .PHONY : clean

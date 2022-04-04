@@ -141,11 +141,70 @@ spec:
 ```
 
 ## ReplicaSets
-TEST
+Unité utilisée pour le contrôle de multiple répliquas d'une application.  
 
 ### Rôle
+Le ReplicaSet est un objet Kubernetes permettant de cibler plusieurs Pods/Replicas d'une application pour faciliter 
+le management de celle-ci.   
+Lors de la création d'un ReplicaSet nous devons définir le template (matrice) qui sera utilisée
+pour la création des futurs Pods et le selector qui défini les champs à utiliser pour cibler les Pods.  
+Dans le cas ou des Pods possèdent tous les paramètres mentionnés dans le selecteur du ReplicaSet ceux-ci seront assimilées dans le 
+ReplicaSet lors de la création. Le ReplicaSet cherchera toujours à attendre l'état désiré (nombre de répliquas) défini par l'administrateur.
+
+**Attention :** Dans le cas où on a plus de Pods que ce qui est défini dans le paramètre "replicas" du ReplicaSet, les pods
+supplémentaires seront supprimés pour attendre l'état souhaité. 
+
+Pour enlever le pod d'un ReplicaSet Vous pouvez modifier ses labels pour qu'il match plus avec les selecteurs du ReplicaSet. 
+
 ### Commandes
+```sh
+# Pour changer le nombre de replicas :
+# Editer le fichier source de l'objet .yml 
+# Changez le nombre de replicas dans le fichier en question
+# Executez la commande suivante : 
+$ kubectl replace -f replicaset-app.yaml
+
+# Vous pouvez également scaler l'application de maniére imperative
+$kubectl scale - -replicas=5 -f replicaset-app.yaml   ## Monter à 5
+$kubectl scale - -replicas=1 -f replicaset-app.yaml  ## Descendre à 5
+
+# Obtenir les labels d'un ReplicaSet :
+$ kubectl describe replicaset/replicaset-app
+
+```
+
 ### Configuration
+```yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  # Nom du ReplicaSet
+  name: frontend
+  # Labels utilisés pour identifier le RS.
+  labels:
+    app: guestbook
+    tier: frontend
+spec:
+  # Nombre de replicas cible.
+  replicas: 3
+  # Idéntifiants utilisés pour 
+  # cibler les Pods par le RS.
+  selector:
+    matchLabels:
+      tier: frontend
+  # Template utilisé pour la creation
+  # des nouveaux Pods.
+  template:
+    metadata:
+      labels:
+        tier: frontend
+    spec:
+      containers:
+      - name: php-redis
+        image: gcr.io/google_samples/gb-frontend:v3
+```
+
+\newpage
 
 ## Déploiements
 

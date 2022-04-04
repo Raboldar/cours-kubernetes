@@ -25,8 +25,6 @@ dirs:
 	mkdir -p $(directories)
 	
 # Commande a executer pour convertir les fichiers.
-# --variable mainfont="inconsolata" 
-# --highlight-style zenburn
 $(output)/%.pdf: $(source)/%.md dirs
 	pandoc \
 		--variable fontsize=12pt \

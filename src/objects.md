@@ -207,12 +207,93 @@ spec:
 \newpage
 
 ## Déploiements
+Le Deployment (déploiement en français) est un objet Kubernetes qui nous permet de contrôler la transition d'état de nos ReplicaSets (ensemble de Pods).
+
+
+### Rôle
+Comme vu dans la définition précédente Kubernetes utilise le ReplicaSet pour englober un ensemble de Pods (des instances d'une même application),
+cela permet à l'administrateur de contrôler le nombre d'instances facilement (augmenter ou diminuer le nombre de Pods).   
+
+Cependant dans le cas ou l'administrateur veut changer un paramètre statique de notre Pod (dans notre exemple l'image conteneur utilisée), celui-ci doit 
+éliminer tous les instances courantes de l'application (demander à Kubernetes de réduire le nombre d'instances à 0) et ensuite récréer tous les Pods avec 
+la nouvelle image.  
+Cette opération engendre une coupure de service pendant la quelle les utilisateurs ne seront pas en mesure d'utiliser l'application.
+
+Le Deployment a le rôle de contrôler ce changement de paramètres, celui-ci utilisera des stratégies de déploiement pour assurer que la transition 
+d'état se fait sans coupure de service. 
+
+![Deployment](./src/img/deployment.png)
+ 
+Vous décrivez un état désiré dans un déploiement et le controlleur de déploiement (composante du Controller-Manager) change l'état réel à l'état souhaité
+à un rythme contrôlé. 
+
+### Commandes
+```
+# Changer l'image d'un deployment.
+$ kubectl set image deployment/frontend www=image:v2
+
+# Afficher l'historique d'un deployment.
+$ kubectl rollout history deployment/frontend 
+
+# Revenir à un état precedent du deployment.
+$ kubectl rollout undo deployment/frontend --to-revision=2
+
+# Changmeent de version en s'assurant un historique pour pouvoir
+# rollback.
+kubectl set image deployment/nginx-deployment nginx=nginx:1.9.1 --record
+
+# Rédéployer notre application, tres utiles lors d'un changement
+# de configuration. (configmap ou secret)
+$ kubectl rollout restart deployment/frontend 
+
+# Verifier l'etat du deployment
+$ kubectl rollout status -w deployment/frontend 
+```
+
+### Configuration
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  # Labels du deployment.
+  labels:
+    app: nginx
+spec:
+  # Nombre de replicas.
+  replicas: 3
+  # Selectors utilisés pour cibler
+  # les replicas.
+  selector:
+    matchLabels:
+      app: nginx
+  # Matrice utilisée pour la creation
+  # des nouveaux Pods.
+  template:
+    # Selecteurs du Pod.
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.7.9
+```
+
+# La configuration d'applications déployées via ConfigMap et Secrets
+test   
+
+## Les ConfigMaps   
+
+Configmaps
 
 ### Rôle
 ### Commandes
 ### Configuration
 
-# La configuration d'applications déployées
+## Les Secrets
+
+Secrets
 
 ### Rôle
 ### Commandes
@@ -224,13 +305,13 @@ spec:
 ### Commandes
 ### Configuration
 
-# Interconnexion des applications
+# Interconnexion des applications via des Services
 
 ### Rôle
 ### Commandes
 ### Configuration
 
-# Stockage 
+# Persistance de la donnée
 
 ### Rôle
 ### Commandes

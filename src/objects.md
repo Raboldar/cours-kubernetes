@@ -281,18 +281,50 @@ spec:
 ```
 
 # La configuration d'applications déployées via ConfigMap et Secrets
-test   
+Les configmaps et secrets sont des objets Kubernetes utilisés pour injecter des fichiers/variables de configuration
+dans l'environnement conteneurisé.
+
 
 ## Les ConfigMaps   
-
-Configmaps
+Les configsMaps nous permettent d'injecter un fichier en clair dans les conteneurs exécutant notre application, ceux-ci doivent être 
+utilisés seulement pour la configuration de l'application.
 
 ### Rôle
+Lors d'un changement de ConfigMap le fichier sera automatiquement injecté dans le Pod.
+Cependant dans le cas de certaines application nous devons demander la relecture du fichier de configuration pour que les 
+changements soit appliqués (soit en redémarrant l'application/Pod soit en utilisant la commande de l'application).
+
 ### Commandes
+```bash
+# Création d'un configMap contenant plusiuers fichiers.
+kubectl create configmap mon-app-config \
+    --from-file=frontend.properties \
+    --from-file=backend.properties --dry-run -o=yaml
+
+# Création d'un configMap à partir contenant
+# tous les fichiers d'un dossier.
+kubectl create configmap mon-app-config \
+    --from-file=configure-pod-container/configmap/kubectl/
+```
+
 ### Configuration
-
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+   name: mon-app-pod
+spec:
+  containers:
+    - name: app-cli
+      image: k8s.gcr.io/busybox
+      command: [ "/bin/sh", "-c", "env" ]
+      # Recuperer les valeur d'environement à partir du configmap
+      envFrom: 
+      - configMapRef:
+          name: mon-app-config
+  restartPolicy: Never
+```
 ## Les Secrets
-
 Secrets
 
 ### Rôle
